@@ -1,4 +1,4 @@
-Slight modification of already existed mutt2task script: https://gist.github.com/noqqe/6562350, as well as tasknote(https://github.com/mikebobroski/tasknote) script.
+Slight modification of already existed mutt2task(https://gist.github.com/noqqe/6562350) script, as well as tasknote(https://github.com/mikebobroski/tasknote) script.
 
 Based on this blogpost: http://www.nixternal.com/mark-e-mails-in-mutt-as-tasks-in-taskwarrior/
 
