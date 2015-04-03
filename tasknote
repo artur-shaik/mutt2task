@@ -37,6 +37,10 @@
 # 	- View Note Feature
 #	- Allow relative path for FOLDER
 
+# Updated 2015, Artur Shaik <ashaihullin@gmail.com>
+# 	- Viewer reads $PAGER variable
+# 	- Added p command, for 'cat file' to note
+
 EDITOR=vim
 TASKBIN=task
 VIEWER=$PAGER
@@ -71,6 +75,7 @@ if [ $# -lt 1 -o $# -gt 3 ]; then
 	echo "Usage:"
    	echo "  New/Edit note: $0 <id>"
 	echo "  View note:     $0 <id> v"
+	echo "  View note:     $0 <id> p file"
 	exit 1
 fi
 
