@@ -3,23 +3,38 @@
  
 ## About
 # Add a mail as task to taskwarrior.
+# Work in conjuction with taskopen script
 # 
 ## Usage
 # add this to your .muttrc:
 # macro index,pager t "<pipe-message>mutt2task.py<enter>" 
  
-# import libraries
+import os
 import sys
 import email
 import re
+
 from email.header import decode_header
 from subprocess import call, Popen, PIPE
-x = sys.stdin.read()
-x = email.message_from_string(x)
+
+home_dir = os.path.expanduser('~')
+
+notes_dir = ""
+notes_folder_pat = re.compile("^[^#]*\s*NOTES_FOLDER\s*=\s*(.*)$")
+for line in open("%s/.taskopenrc" % home_dir, "r"):
+    match = notes_folder_pat.match(line)
+    if match:
+        notes_folder = match.group(1).replace('"', '')
+
+if not notes_dir:
+    notes_dir = "%s/.tasknotes" % home_dir
+
+message = sys.stdin.read()
+message = email.message_from_string(message)
 
 body = None
 html = None
-for part in x.walk():
+for part in message.walk():
     if part.get_content_type() == "text/plain":
         if body is None:
             body = ""
@@ -37,7 +52,7 @@ for part in x.walk():
             'replace'
         ).encode('utf8','replace')
 
-tmpfile = "/tmp/mutt2task.tmp"
+tmpfile = Popen('mktemp', stdout=PIPE).stdout.read().strip()
 out = ""
 if html:
     with open(tmpfile, "w") as f:
@@ -52,18 +67,19 @@ else:
 with open(tmpfile, "w") as f:
     f.write(out)
 
-x = x['Subject']
+message = message['Subject']
  
 # decode internationalized subject and transform ascii into utf8
-x = decode_header(x)
-x = ' '.join([ unicode(t[0], t[1] or 'ASCII' ) for t in x ])
-x = x.encode('utf8')
+message = decode_header(message)
+message = ' '.join([unicode(t[0], t[1] or 'ASCII') for t in message])
+message = message.encode('utf8')
  
 # customize your own taskwarrior line
-# use `x' to add the subject
-res = Popen(['task', 'add', 'pri:L', '+mail', '--', x ], stdout=PIPE)
+# use `message' to add the subject
+res = Popen(['task', 'add', 'pri:L', '+mail', '--', message], stdout=PIPE)
 match = re.match("Created task (\d+)\.", res.stdout.read())
 if match:
-    call(['tasknote', match.group(1), 'p', tmpfile])
-
-call(['rm', tmpfile])
+    id = match.group(1)
+    uuid = Popen(['task', id, 'uuids'], stdout=PIPE).stdout.read().strip()
+    call(['task', id, 'annotate', '--', 'email:', 'Notes'])
+    os.rename(tmpfile, '%s/%s.txt' % (notes_dir, uuid))
