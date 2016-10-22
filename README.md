@@ -24,4 +24,4 @@ macro index,pager t "<pipe-message>mutt2task.py<enter>"
 
 # Usage
 
-Just press t on email or inside email.
+Just press `t` on email or inside email.
