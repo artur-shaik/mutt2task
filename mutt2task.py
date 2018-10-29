@@ -28,6 +28,11 @@ for line in open("%s/.taskopenrc" % home_dir, "r"):
 
 if not notes_dir:
     notes_dir = "%s/.tasknotes" % home_dir
+    if not os.path.isdir(notes_dir):
+        try:
+            os.mkdir(notes_dir, 750)
+        except:
+            print("ERR: Sorry, cannot create \"%s\"." % notes_dir)
 
 message = sys.stdin.read()
 message = email.message_from_string(message)
