@@ -93,13 +93,18 @@ message = message.encode('utf8')
  
 # customize your own taskwarrior line
 # use `message' to add the subject
+if message == "None":
+    message = "E-Mail import: no subject specified."
+else:
+    message = "E-Mail subject: " + message
+
 res = Popen(['task', 'add', 'pri:L', '+email', '--', message], stdout=PIPE)
 match = re.match("^Created task (\d+).*", res.stdout.read())
 if match:
     print(match.string.strip())
     id = match.group(1)
     uuid = Popen(['task', id, 'uuids'], stdout=PIPE).stdout.read().strip()
-    ret = call(['task', id, 'annotate', '--', 'email:', 'body'])
+    ret = call(['task', id, 'annotate', '--', 'email-body'])
     if ret:
         print("ERR: Sorry, cannot annotate task with ID=%s." % id)
         rollback()
