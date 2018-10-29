@@ -13,6 +13,7 @@ import os
 import sys
 import email
 import re
+import errno
 
 from email.header import decode_header
 from subprocess import call, Popen, PIPE
@@ -28,11 +29,14 @@ for line in open("%s/.taskopenrc" % home_dir, "r"):
 
 if not notes_folder:
     notes_folder = "%s/.tasknotes" % home_dir
-    if not os.path.isdir(notes_folder):
-        try:
-            os.mkdir(notes_folder, 750)
-        except:
-            print("ERR: Sorry, cannot create \"%s\"." % notes_folder)
+
+try:
+    os.mkdir(notes_folder, 750)
+except OSError as ose:
+    if ose.errno == errno.EEXIST and os.path.isdir(notes_folder):
+        pass
+    print("ERR: Sorry, cannot create \"%s\"." % notes_folder)
+    raise
 
 message = sys.stdin.read()
 message = email.message_from_string(message)
