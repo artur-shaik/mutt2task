@@ -19,20 +19,20 @@ from subprocess import call, Popen, PIPE
 
 home_dir = os.path.expanduser('~')
 
-notes_dir = ""
+notes_folder = ""
 notes_folder_pat = re.compile("^[^#]*\s*NOTES_FOLDER\s*=\s*(.*)$")
 for line in open("%s/.taskopenrc" % home_dir, "r"):
     match = notes_folder_pat.match(line)
     if match:
         notes_folder = match.group(1).replace('"', '')
 
-if not notes_dir:
-    notes_dir = "%s/.tasknotes" % home_dir
-    if not os.path.isdir(notes_dir):
+if not notes_folder:
+    notes_folder = "%s/.tasknotes" % home_dir
+    if not os.path.isdir(notes_folder):
         try:
-            os.mkdir(notes_dir, 750)
+            os.mkdir(notes_folder, 750)
         except:
-            print("ERR: Sorry, cannot create \"%s\"." % notes_dir)
+            print("ERR: Sorry, cannot create \"%s\"." % notes_folder)
 
 message = sys.stdin.read()
 message = email.message_from_string(message)
@@ -87,4 +87,4 @@ if match:
     id = match.group(1)
     uuid = Popen(['task', id, 'uuids'], stdout=PIPE).stdout.read().strip()
     call(['task', id, 'annotate', '--', 'email:', 'Notes'])
-    os.rename(tmpfile, '%s/%s.txt' % (notes_dir, uuid))
+    os.rename(tmpfile, '%s/%s.txt' % (notes_folder, uuid))
