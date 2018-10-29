@@ -38,8 +38,9 @@ try:
 except OSError as ose:
     if ose.errno == errno.EEXIST and os.path.isdir(notes_folder):
         pass
-    print("ERR: Sorry, cannot create directory \"%s\"." % notes_folder)
-    raise
+    else:
+        print("ERR: Sorry, cannot create directory \"%s\"." % notes_folder)
+        raise
 
 message = sys.stdin.read()
 message = email.message_from_string(message)
