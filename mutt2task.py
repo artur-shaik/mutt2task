@@ -35,7 +35,7 @@ try:
 except OSError as ose:
     if ose.errno == errno.EEXIST and os.path.isdir(notes_folder):
         pass
-    print("ERR: Sorry, cannot create \"%s\"." % notes_folder)
+    print("ERR: Sorry, cannot create directory \"%s\"." % notes_folder)
     raise
 
 message = sys.stdin.read()
