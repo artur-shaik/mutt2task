@@ -18,6 +18,10 @@ import errno
 from email.header import decode_header
 from subprocess import call, Popen, PIPE
 
+def rollback():
+    print("INFO: Rolling back incomplete task/note creation:")
+    call(['task', 'rc.confirmation=off', 'undo'])
+
 home_dir = os.path.expanduser('~')
 
 notes_folder = ""
@@ -89,10 +93,22 @@ message = message.encode('utf8')
  
 # customize your own taskwarrior line
 # use `message' to add the subject
-res = Popen(['task', 'add', 'pri:L', '+mail', '--', message], stdout=PIPE)
-match = re.match("Created task (\d+)\.", res.stdout.read())
+res = Popen(['task', 'add', 'pri:L', '+email', '--', message], stdout=PIPE)
+match = re.match("^Created task (\d+).*", res.stdout.read())
 if match:
+    print(match.string.strip())
     id = match.group(1)
     uuid = Popen(['task', id, 'uuids'], stdout=PIPE).stdout.read().strip()
-    call(['task', id, 'annotate', '--', 'email:', 'Notes'])
-    os.rename(tmpfile, '%s/%s.txt' % (notes_folder, uuid))
+    ret = call(['task', id, 'annotate', '--', 'email:', 'body'])
+    if ret:
+        print("ERR: Sorry, cannot annotate task with ID=%s." % id)
+        rollback()
+
+    notes_file = notes_folder + "/" + uuid + ".txt"
+    try:
+        os.rename(tmpfile, notes_file)
+    except:
+        print("ERR: Sorry, cannot create notes file \"%s\"." % notes_file)
+        rollback()
+
+### EOF
