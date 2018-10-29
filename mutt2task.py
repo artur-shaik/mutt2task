@@ -27,6 +27,9 @@ for line in open("%s/.taskopenrc" % home_dir, "r"):
     if match:
         notes_folder = match.group(1).replace('"', '')
 
+if "$HOME" in notes_folder:
+    notes_folder = notes_folder.replace("$HOME", home_dir)
+
 if not notes_folder:
     notes_folder = "%s/.tasknotes" % home_dir
 
