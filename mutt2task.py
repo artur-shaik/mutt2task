@@ -104,7 +104,7 @@ if match:
     print(match.string.strip())
     id = match.group(1)
     uuid = Popen(['task', id, 'uuids'], stdout=PIPE).stdout.read().strip()
-    ret = call(['task', id, 'annotate', '--', 'email-body'])
+    ret = call(['task', id, 'annotate', '--', 'email:', 'Notes'])
     if ret:
         print("ERR: Sorry, cannot annotate task with ID=%s." % id)
         rollback()
