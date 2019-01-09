@@ -14,6 +14,7 @@ import sys
 import email
 import re
 import errno
+import shutil
 
 from email.header import decode_header
 from subprocess import call, Popen, PIPE
@@ -111,7 +112,8 @@ if match:
 
     notes_file = notes_folder + "/" + uuid + ".txt"
     try:
-        os.rename(tmpfile, notes_file)
+        shutil.copy(tmpfile, notes_file)
+        os.remove(tmpfile)
     except:
         print("ERR: Sorry, cannot create notes file \"%s\"." % notes_file)
         rollback()
