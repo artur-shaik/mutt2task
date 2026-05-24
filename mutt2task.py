@@ -75,7 +75,7 @@ else:
     out = body
 
 with open(tmpfile, "wb") as f:  # Changed mode to binary write
-    f.write(out)
+    f.write(out if isinstance(out, bytes) else out.encode())
 
 message = message['Subject']
 
